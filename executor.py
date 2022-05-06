@@ -15,14 +15,15 @@ def generate_uri(doc, data_dir=".", file_ext="jpg"):
 
 
 def preproc(doc, tensor_shape=(80, 60)):
-    # ensure we have a tensor
-    if doc.uri:
-        doc.load_uri_to_image_tensor()
-    elif doc.blob:
-        doc.convert_blob_to_image_tensor()
+    if not doc.text:
+        # ensure we have a tensor
+        if doc.uri:
+            doc.load_uri_to_image_tensor()
+        elif doc.blob:
+            doc.convert_blob_to_image_tensor()
 
-    # Apply settings to tensor
-    doc.set_image_tensor_shape(tensor_shape).set_image_tensor_normalization()
+        # Apply settings to tensor
+        doc.set_image_tensor_shape(tensor_shape).set_image_tensor_normalization()
 
     return doc
 
