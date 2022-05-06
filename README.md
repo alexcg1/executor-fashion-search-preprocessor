@@ -1,5 +1,14 @@
 # FashionSearchPreprocessor
 
+For all fashion image Documents:
+
+**On all requests**:
+- Convert to tensor (if needed)
+- Normalize and resize tensors to consistent size
+
+**On `/index` request**:
+- Add metadata including price range, rating range, path to file
+
 
 ## Usage
 
