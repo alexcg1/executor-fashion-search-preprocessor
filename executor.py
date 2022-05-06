@@ -3,10 +3,15 @@ import random
 import os
 
 
-def generate_price(price_range):
+def generate_price(price_range=(10, 200)):
     price = random.randrange(price_range[0], price_range[1])
 
     return price
+
+def generate_uri(doc, data_dir=".", file_ext="jpg"):
+    doc.uri = f"{data_dir}/{doc.id}.{file_ext}"
+
+    return doc
 
 
 def preproc(doc, tensor_shape=(80, 60)):
@@ -22,7 +27,7 @@ def preproc(doc, tensor_shape=(80, 60)):
     return doc
 
 
-def add_metadata(doc, data_dir, rating_range=(0, 5), price_range=(10, 200)):
+def add_metadata(doc, data_dir="./data", rating_range=(0, 5), price_range=(10, 200)):
     # Fix uri
     if not data_dir:
         data_dir = "."
@@ -61,8 +66,9 @@ class FashionSearchPreprocessor(Executor):
     @requests(on="/index")
     def process_index_document(self, docs: DocumentArray, **kwargs):
         for doc in docs:
+            doc = generate_uri(doc, data_dir=self.data_dir)
             doc = preproc(doc)
-            doc = add_metadata(doc, data_dir="../data/images")
+            doc = add_metadata(doc, data_dir=self.data_dir)
 
     @requests(on="/search")
     def process_search_document(self, docs: DocumentArray, **kwargs):
