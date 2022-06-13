@@ -47,6 +47,7 @@ class FashionSearchPreprocessor(Executor):
 
     def _generate_uri(self, doc):
         doc.uri = f"{self.data_dir}/{doc.id}.{self.file_ext}"
+        doc.tags["original_filename"] = f"{doc.id}.{self.file_ext}"
 
         return doc
 
