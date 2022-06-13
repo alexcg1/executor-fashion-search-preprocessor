@@ -1,4 +1,5 @@
 from jina import Executor, DocumentArray, requests
+import os
 import numpy as np
 import random
 
@@ -21,12 +22,17 @@ class FashionSearchPreprocessor(Executor):
         self.rating_range = rating_range
         self.file_ext = file_ext
 
-    @requests(on="/index")
+    @requests(on=["/index", "/update"])
     def process_index_document(self, docs: DocumentArray, **kwargs):
+        docs.apply(self._generate_uri)
+        docs.apply(self._preproc)
+        docs.apply(self._add_metadata)
+        # for doc in docs:
+            # doc = self._generate_uri(doc)
+            # doc = self._preproc(doc)
+            # doc = self._add_metadata(doc)
         for doc in docs:
-            doc = self._generate_uri(doc)
-            doc = self._preproc(doc)
-            doc = self._add_metadata(doc)
+            doc.convert_uri_to_datauri()
 
     @requests(on="/search")
     def process_search_document(self, docs: DocumentArray, **kwargs):
@@ -48,14 +54,15 @@ class FashionSearchPreprocessor(Executor):
         if not doc.text:
             # ensure we have a tensor
             if doc.uri:
-                doc.load_uri_to_image_tensor()
-            elif doc.blob:
-                doc.convert_blob_to_image_tensor()
+                if os.path.isfile(doc.uri):
+                    doc.load_uri_to_image_tensor()
+            # elif doc.blob:
+                # doc.convert_blob_to_image_tensor()
 
             # Apply settings to tensor
-            doc.tensor = doc.tensor.astype(np.uint8)
-            doc.set_image_tensor_shape(shape=self.tensor_shape)
-            doc.set_image_tensor_normalization()
+                    doc.tensor = doc.tensor.astype(np.uint8)
+                    doc.set_image_tensor_shape(shape=self.tensor_shape)
+                    doc.set_image_tensor_normalization()
 
         return doc
 
@@ -78,5 +85,6 @@ class FashionSearchPreprocessor(Executor):
             doc.tags["rating"] = random.randrange(
                 self.rating_range[0], self.rating_range[1]
             )
+
 
         return doc
