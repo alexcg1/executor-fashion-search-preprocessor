@@ -28,9 +28,9 @@ class FashionSearchPreprocessor(Executor):
         docs.apply(self._preproc)
         docs.apply(self._add_metadata)
         # for doc in docs:
-            # doc = self._generate_uri(doc)
-            # doc = self._preproc(doc)
-            # doc = self._add_metadata(doc)
+        # doc = self._generate_uri(doc)
+        # doc = self._preproc(doc)
+        # doc = self._add_metadata(doc)
         for doc in docs:
             doc.convert_uri_to_datauri()
 
@@ -46,14 +46,10 @@ class FashionSearchPreprocessor(Executor):
         return price
 
     def _generate_uri(self, doc):
-        if os.path.isfile(doc.uri):
-            doc.uri = f"{self.data_dir}/{doc.id}.{self.file_ext}"
-            doc.tags["original_filename"] = f"{doc.id}.{self.file_ext}"
+        doc.uri = f"{self.data_dir}/{doc.id}.{self.file_ext}"
+        doc.tags["original_filename"] = f"{doc.id}.{self.file_ext}"
 
-            return doc
-
-        else:
-            del doc
+        return doc
 
     def _preproc(self, doc):
         if not doc.text:
@@ -61,10 +57,10 @@ class FashionSearchPreprocessor(Executor):
             if doc.uri:
                 if os.path.isfile(doc.uri):
                     doc.load_uri_to_image_tensor()
-            # elif doc.blob:
-                # doc.convert_blob_to_image_tensor()
+                    # elif doc.blob:
+                    # doc.convert_blob_to_image_tensor()
 
-            # Apply settings to tensor
+                    # Apply settings to tensor
                     doc.tensor = doc.tensor.astype(np.uint8)
                     doc.set_image_tensor_shape(shape=self.tensor_shape)
                     doc.set_image_tensor_normalization()
@@ -90,6 +86,5 @@ class FashionSearchPreprocessor(Executor):
             doc.tags["rating"] = random.randrange(
                 self.rating_range[0], self.rating_range[1]
             )
-
 
         return doc
